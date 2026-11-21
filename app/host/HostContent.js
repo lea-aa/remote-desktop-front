@@ -168,9 +168,10 @@ export default function HostContent() {
               height: { ideal: 1080 }
             },
             audio: {
-              echoCancellation: true,
-              noiseSuppression: true,
-              autoGainControl: true
+              systemAudio: "include",
+              // echoCancellation: true,
+              // noiseSuppression: true,
+              // autoGainControl: true
             }
           });
 
