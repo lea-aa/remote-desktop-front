@@ -38,6 +38,33 @@ export default function ViewerContent() {
     }]);
   }, []);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const toggleFullscreen = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      // Entrar en pantalla completa
+      container.requestFullscreen?.()
+        .then(() => setIsFullscreen(true))
+        .catch(err => addDebugLog(`Error entering fullscreen: ${err.message}`));
+    } else {
+      // Salir de pantalla completa
+      document.exitFullscreen?.()
+        .then(() => setIsFullscreen(false))
+        .catch(err => addDebugLog(`Error exiting fullscreen: ${err.message}`));
+    }
+  }, [addDebugLog]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
   // The main WebRTC connection setup
   useEffect(() => {
     if (!connectionId) return;
@@ -264,6 +291,14 @@ export default function ViewerContent() {
                 {errorMessage}
               </div>
             )}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={toggleFullscreen}
+                className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
+              >
+                {isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
+              </button>
+            </div>
           </div>
 
           <div
